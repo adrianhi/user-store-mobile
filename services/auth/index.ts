@@ -20,15 +20,14 @@ export const registerUser = async (userData: UserData): Promise<any> => {
       body: JSON.stringify(userData),
     });
 
-    if (!response.ok) {
-      throw new Error('Error en el registro');
-    }
-
     const data = await response.json();
-    return data; // Devuelve la respuesta de la API si es necesario
+    if (!response.ok) {
+      return { error: data.error || 'Error en el inicio de sesión' };
+    }
+    return data;
   } catch (error) {
     console.error('Error al registrar el usuario:', error);
-    throw error; // Propaga el error para manejarlo donde se llama a esta función
+    throw error;
   }
 };
 
@@ -43,14 +42,16 @@ export const loginUser = async (userData: UserLogin): Promise<any> => {
       body: JSON.stringify(userData),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error('Error en el registro');
+      return { error: data.error || 'Error en el inicio de sesión' };
     }
 
-    const data = await response.json();
-    return data; // Devuelve la respuesta de la API si es necesario
+    return data;
   } catch (error) {
-    console.error('Error al registrar el usuario:', error);
-    throw error; // Propaga el error para manejarlo donde se llama a esta función
+    console.error('Error al iniciar sesión:', error);
+    return { error: 'Error al conectar con el servidor. Inténtalo más tarde.' };
   }
 };
+

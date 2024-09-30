@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button, Text, TextInput, View, TouchableOpacity } from "react-native";
 import { loginUser } from "@services/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Toast from "react-native-root-toast";
 
 const LoginForm = () => {
   const [email, setEmail] = useState<string>("");
@@ -17,9 +18,31 @@ const LoginForm = () => {
     try {
       const userData = { email, password };
       const response = await loginUser(userData);
-      console.log("Inicio correcto:", response);
+
+      if (response.error) {
+        Toast.show(response.error, {
+          duration: Toast.durations.LONG,
+          position: Toast.positions.BOTTOM,
+          backgroundColor: "red",
+          textColor: "white",
+        });
+      } else if (response?.user && response?.token) {
+        Toast.show(`Bienvenido, ${response.user.name}!`, {
+          duration: Toast.durations.SHORT,
+          position: Toast.positions.BOTTOM,
+          backgroundColor: "green",
+          textColor: "white",
+        });
+      }
+      
     } catch (error) {
-      console.error("Inicio incorrecto:", error);
+      console.error("Error en el inicio de sesión:", error);
+      Toast.show("Error en el inicio de sesión. Inténtalo de nuevo.", {
+        duration: Toast.durations.LONG,
+        position: Toast.positions.BOTTOM,
+        backgroundColor: "red",
+        textColor: "white",
+      });
     }
   };
 
