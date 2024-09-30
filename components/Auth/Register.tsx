@@ -3,6 +3,7 @@ import { Link } from "expo-router";
 import { Text, TextInput, View, Button, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { registerUser } from "@services/auth"; // Asegúrate de ajustar la ruta si es necesario
+import Toast from "react-native-root-toast";
 
 const RegisterForm: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -19,10 +20,29 @@ const RegisterForm: React.FC = () => {
       const userData = { name, email, password };
       const response = await registerUser(userData);
       console.log("Usuario registrado:", response);
-      // Aquí puedes manejar la respuesta, como navegar a otra pantalla o mostrar un mensaje de éxito
+      if (response.error) {
+        Toast.show(response.error, {
+          duration: Toast.durations.LONG,
+          position: Toast.positions.BOTTOM,
+          backgroundColor: "red",
+          textColor: "white",
+        });
+      } else if (response?.user && response?.token) {
+        Toast.show(`Bienvenido, ${response.user.name}!`, {
+          duration: Toast.durations.SHORT,
+          position: Toast.positions.BOTTOM,
+          backgroundColor: "green",
+          textColor: "white",
+        });
+      }
     } catch (error) {
-      console.error("Error en el registro:", error);
-      // Aquí puedes manejar el error, como mostrar un mensaje de error al usuario
+      console.error("Error en el inicio de sesión:", error);
+      Toast.show("Error en el inicio de sesión. Inténtalo de nuevo.", {
+        duration: Toast.durations.LONG,
+        position: Toast.positions.BOTTOM,
+        backgroundColor: "red",
+        textColor: "white",
+      });
     }
   };
 
